@@ -5,12 +5,12 @@ locals {
 benchmark "mandatory" {
   title = "Mandatory"
   children = [
-    control.gcp_storage_bucket_has_mandatory_tags,
+    control.storage_bucket_has_mandatory_tags,
   ]
 }
 
-control "gcp_storage_bucket_has_mandatory_tags" {
-  title = "GCP storage buckets have mandatory tags"
+control "storage_bucket_has_mandatory_tags" {
+  title = "Storage buckets have mandatory tags"
   sql = <<EOT
     with input as (
       select array${replace(jsonencode(local.mandatory_tags), "\"", "'")} as mandatory_tags

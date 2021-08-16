@@ -44,7 +44,7 @@ steampipe check benchmark.untagged
 
 Run a specific control:
 ```shell
-steampipe check control.s3_bucket_untagged
+steampipe check control.storage_bucket_untagged
 ```
 
 ### Credentials

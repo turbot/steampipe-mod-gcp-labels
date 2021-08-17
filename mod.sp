@@ -2,7 +2,7 @@ mod "gcp_tags" {
   # hub metadata
   title         = "GCP Tags"
   description   = "Run tagging controls across all your GCP projects using Steampipe."
-  color         = "#FF9900"
+  color         = "#EA4335"
   documentation = file("./docs/index.md")
   icon          = "/images/mods/turbot/gcp-tags.svg"
   categories    = ["gcp", "tags", "public cloud"]

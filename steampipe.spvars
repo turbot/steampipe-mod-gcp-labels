@@ -1,0 +1,3 @@
+mandatory_labels = ["environment", "owner"]
+prohibited_labels = ["password", "key"]
+label_limit = 60

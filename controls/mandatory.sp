@@ -102,7 +102,35 @@ control "compute_forwarding_rule_mandatory" {
 control "compute_image_mandatory" {
   title       = "Compute images should have mandatory labels"
   description = "Check if Compute images have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  sql         = <<EOT
+    with analysis as (
+      select
+        self_link,
+        title,
+        labels ?& $1 as has_mandatory_labels,
+        to_jsonb($1) - array(select jsonb_object_keys(labels)) as missing_labels,
+        location,
+        project
+      from
+        gcp_compute_image
+      where
+        source_project = project
+    )
+    select
+      self_link as resource,
+      case
+        when has_mandatory_labels then 'ok'
+        else 'alarm'
+      end as status,
+      case
+        when has_mandatory_labels then title || ' has all mandatory labels.'
+        else title || ' is missing labels: ' || array_to_string(array(select jsonb_array_elements_text(missing_labels)), ', ') || '.'
+      end as reason,
+      location,
+      project
+    from
+      analysis
+  EOT
   param "mandatory_labels" {
     default = var.mandatory_labels
   }

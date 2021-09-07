@@ -98,7 +98,31 @@ control "compute_forwarding_rule_label_limit" {
 control "compute_image_label_limit" {
   title       = "Compute images should not exceed label limit"
   description = "Check if the number of labels on Compute images do not exceed the limit."
-  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  sql         = <<EOT
+    with analysis as (
+      select
+        self_link,
+        title,
+        cardinality(array(select jsonb_object_keys(labels))) as num_label_keys,
+        location,
+        project
+      from
+        gcp_compute_image
+      where
+        source_project = project
+    )
+    select
+      self_link as resource,
+      case
+        when num_label_keys > $1::integer then 'alarm'
+        else 'ok'
+      end as status,
+      title || ' has ' || num_label_keys || ' label(s).' as reason,
+      location,
+      project
+    from
+      analysis
+  EOT
   param "label_limit" {
     default = var.label_limit
   }

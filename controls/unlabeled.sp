@@ -72,7 +72,24 @@ control "compute_forwarding_rule_unlabeled" {
 control "compute_image_unlabeled" {
   title       = "Compute images should be labeled"
   description = "Check if Compute images have at least 1 label."
-  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  sql         = <<EOT
+    select
+      self_link as resource,
+      case
+        when labels is not null then 'ok'
+        else 'alarm'
+      end as status,
+      case
+        when labels is not null then title || ' has labels.'
+        else title || ' has no labels.'
+      end as reason,
+      location,
+      project
+    from
+      gcp_compute_image
+    where
+      source_project = project;
+  EOT
 }
 
 control "compute_instance_unlabeled" {

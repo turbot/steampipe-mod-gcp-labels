@@ -107,7 +107,39 @@ control "compute_forwarding_rule_prohibited" {
 control "compute_image_prohibited" {
   title       = "Compute images should not have prohibited labels"
   description = "Check if Compute images have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  sql         = <<EOT
+    with analysis as (
+      select
+        self_link,
+        array_agg(k) as prohibited_labels
+      from
+        gcp_compute_image,
+        jsonb_object_keys(labels) as k,
+        unnest($1::text[]) as prohibited_key
+      where
+        k = prohibited_key
+        and source_project = project
+      group by
+        self_link
+    )
+    select
+      r.self_link as resource,
+      case
+        when a.prohibited_labels <> array[]::text[] then 'alarm'
+        else 'ok'
+      end as status,
+      case
+        when a.prohibited_labels <> array[]::text[] then r.title || ' has prohibited labels: ' || array_to_string(a.prohibited_labels, ', ') || '.'
+        else r.title || ' has no prohibited labels.'
+      end as reason,
+      location,
+      project
+    from
+      gcp_compute_image as r
+    full outer join
+      analysis as a on a.self_link = r.self_link
+    where source_project = project
+  EOT
   param "prohibited_labels" {
     default = var.prohibited_labels
   }

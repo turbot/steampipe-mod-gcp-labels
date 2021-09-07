@@ -52,11 +52,8 @@ benchmark "prohibited" {
     control.compute_forwarding_rule_prohibited,
     control.compute_image_prohibited,
     control.compute_instance_prohibited,
-    control.compute_instance_template_prohibited,
     control.compute_snapshot_prohibited,
     control.dns_managed_zone_prohibited,
-    control.kms_key_prohibited,
-    control.kubernetes_cluster_prohibited,
     control.sql_database_instance_prohibited,
     control.storage_bucket_prohibited
   ]
@@ -125,15 +122,6 @@ control "compute_instance_prohibited" {
   }
 }
 
-control "compute_instance_template_prohibited" {
-  title       = "Compute instance templates should not have prohibited labels"
-  description = "Check if Compute instance templates have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_instance_template")
-  param "prohibited_labels" {
-    default = var.prohibited_labels
-  }
-}
-
 control "compute_snapshot_prohibited" {
   title       = "Compute snapshots should not have prohibited labels"
   description = "Check if Compute snapshots have any prohibited labels."
@@ -147,24 +135,6 @@ control "dns_managed_zone_prohibited" {
   title       = "DNS managed zones should not have prohibited labels"
   description = "Check if DNS managed zones have any prohibited labels."
   sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
-  param "prohibited_labels" {
-    default = var.prohibited_labels
-  }
-}
-
-control "kms_key_prohibited" {
-  title       = "Kms keys should not have prohibited labels"
-  description = "Check if Kms keys have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_kms_key")
-  param "prohibited_labels" {
-    default = var.prohibited_labels
-  }
-}
-
-control "kubernetes_cluster_prohibited" {
-  title       = "Kubernetes clusters should not have prohibited labels"
-  description = "Check if Kubernetes clusters have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_kubernetes_cluster")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }

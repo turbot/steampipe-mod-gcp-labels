@@ -47,11 +47,8 @@ benchmark "mandatory" {
     control.compute_forwarding_rule_mandatory,
     control.compute_image_mandatory,
     control.compute_instance_mandatory,
-    control.compute_instance_template_mandatory,
     control.compute_snapshot_mandatory,
     control.dns_managed_zone_mandatory,
-    control.kms_key_mandatory,
-    control.kubernetes_cluster_mandatory,
     control.sql_database_instance_mandatory,
     control.storage_bucket_mandatory
   ]
@@ -120,15 +117,6 @@ control "compute_instance_mandatory" {
   }
 }
 
-control "compute_instance_template_mandatory" {
-  title       = "Compute instance templates should have mandatory labels"
-  description = "Check if Compute instance templates have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_instance_template")
-  param "mandatory_labels" {
-    default = var.mandatory_labels
-  }
-}
-
 control "compute_snapshot_mandatory" {
   title       = "Compute snapshots should have mandatory labels"
   description = "Check if Compute snapshots have mandatory labels."
@@ -142,24 +130,6 @@ control "dns_managed_zone_mandatory" {
   title       = "DNS managed zones should have mandatory labels"
   description = "Check if Dns managed zones have mandatory labels."
   sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
-  param "mandatory_labels" {
-    default = var.mandatory_labels
-  }
-}
-
-control "kms_key_mandatory" {
-  title       = "Kms keys should have mandatory labels"
-  description = "Check if Kms keys have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_kms_key")
-  param "mandatory_labels" {
-    default = var.mandatory_labels
-  }
-}
-
-control "kubernetes_cluster_mandatory" {
-  title       = "Kubernetes clusters should have mandatory labels"
-  description = "Check if Kubernetes clusters have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_kubernetes_cluster")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }

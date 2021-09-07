@@ -32,11 +32,8 @@ benchmark "unlabeled" {
     control.compute_forwarding_rule_unlabeled,
     control.compute_image_unlabeled,
     control.compute_instance_unlabeled,
-    control.compute_instance_template_unlabeled,
     control.compute_snapshot_unlabeled,
     control.dns_managed_zone_unlabeled,
-    control.kms_key_unlabeled,
-    control.kubernetes_cluster_unlabeled,
     control.sql_database_instance_unlabeled,
     control.storage_bucket_unlabeled
   ]
@@ -84,12 +81,6 @@ control "compute_instance_unlabeled" {
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
 }
 
-control "compute_instance_template_unlabeled" {
-  title       = "Compute instance templates should be labeled"
-  description = "Check if Compute instance templates have at least 1 label."
-  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_compute_instance_template")
-}
-
 control "compute_snapshot_unlabeled" {
   title       = "Compute snapshots should be labeled"
   description = "Check if Compute snapshots have at least 1 label."
@@ -100,18 +91,6 @@ control "dns_managed_zone_unlabeled" {
   title       = "DNS managed zones should be labeled"
   description = "Check if DNS managed zones have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
-}
-
-control "kms_key_unlabeled" {
-  title       = "Kms keys should be labeled"
-  description = "Check if Kms keys have at least 1 label."
-  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_kms_key")
-}
-
-control "kubernetes_cluster_unlabeled" {
-  title       = "Kubernetes clusters should be labeled"
-  description = "Check if Kubernetes clusters have at least 1 label."
-  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_kubernetes_cluster")
 }
 
 control "sql_database_instance_unlabeled" {

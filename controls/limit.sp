@@ -36,15 +36,135 @@ benchmark "limit" {
   title       = "Limit"
   description = "The number of labels on each resource should be monitored to avoid hitting the limit unexpectedly."
   children = [
+    control.bigquery_dataset_label_limit,
+    control.bigquery_job_label_limit,
+    control.bigquery_table_label_limit,
+    control.compute_disk_label_limit,
+    control.compute_forwarding_rule_label_limit,
+    control.compute_image_label_limit,
     control.compute_instance_label_limit,
+    control.compute_instance_template_label_limit,
+    control.compute_snapshot_label_limit,
+    control.dns_managed_zone_label_limit,
+    control.kms_key_label_limit,
+    control.kubernetes_cluster_label_limit,
+    control.sql_database_instance_label_limit,
     control.storage_bucket_label_limit
   ]
+}
+
+control "bigquery_dataset_label_limit" {
+  title       = "BigQuery datasets should not exceed label limit"
+  description = "Check if the number of labels on BigQuery datasets do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_bigquery_dataset")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "bigquery_job_label_limit" {
+  title       = "BigQuery jobs should not exceed label limit"
+  description = "Check if the number of labels on BigQuery jobs do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_bigquery_job")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "bigquery_table_label_limit" {
+  title       = "BigQuery tables should not exceed label limit"
+  description = "Check if the number of labels on BigQuery tables do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_bigquery_table")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "compute_disk_label_limit" {
+  title       = "Compute disks should not exceed label limit"
+  description = "Check if the number of labels on Compute disks do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_disk")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "compute_forwarding_rule_label_limit" {
+  title       = "Compute forwarding rules should not exceed label limit"
+  description = "Check if the number of labels on Compute forwarding rules do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "compute_image_label_limit" {
+  title       = "Compute images should not exceed label limit"
+  description = "Check if the number of labels on Compute images do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  param "label_limit" {
+    default = var.label_limit
+  }
 }
 
 control "compute_instance_label_limit" {
   title       = "Compute instances should not exceed label limit"
   description = "Check if the number of labels on Compute instances do not exceed the limit."
   sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "compute_instance_template_label_limit" {
+  title       = "Compute instance templates should not exceed label limit"
+  description = "Check if the number of labels on Compute instance templates do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_instance_template")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "compute_snapshot_label_limit" {
+  title       = "Compute snapshots should not exceed label limit"
+  description = "Check if the number of labels on Compute snapshots do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_compute_snapshot")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "dns_managed_zone_label_limit" {
+  title       = "DNS managed zones should not exceed label limit"
+  description = "Check if the number of labels on DNS managed zones do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "kms_key_label_limit" {
+  title       = "Kms keys should not exceed label limit"
+  description = "Check if the number of labels on Kms keys do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_kms_key")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "kubernetes_cluster_label_limit" {
+  title       = "Kubernetes clusters should not exceed label limit"
+  description = "Check if the number of labels on Kubernetes clusters do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_kubernetes_cluster")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "sql_database_instance_label_limit" {
+  title       = "SQL database instances should not exceed label limit"
+  description = "Check if the number of labels on SQL database instances do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
   param "label_limit" {
     default = var.label_limit
   }

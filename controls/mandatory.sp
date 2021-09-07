@@ -40,15 +40,135 @@ benchmark "mandatory" {
   title       = "Mandatory"
   description = "Resources should all have a standard set of labels applied for functions like resource organization, automation, cost control, and access control."
   children = [
+    control.bigquery_dataset_mandatory,
+    control.bigquery_job_mandatory,
+    control.bigquery_table_mandatory,
+    control.compute_disk_mandatory,
+    control.compute_forwarding_rule_mandatory,
+    control.compute_image_mandatory,
     control.compute_instance_mandatory,
-    control.storage_bucket_mandatory,
+    control.compute_instance_template_mandatory,
+    control.compute_snapshot_mandatory,
+    control.dns_managed_zone_mandatory,
+    control.kms_key_mandatory,
+    control.kubernetes_cluster_mandatory,
+    control.sql_database_instance_mandatory,
+    control.storage_bucket_mandatory
   ]
+}
+
+control "bigquery_dataset_mandatory" {
+  title       = "BigQuery datasets should have mandatory labels"
+  description = "Check if BigQuery datasets have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_dataset")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "bigquery_job_mandatory" {
+  title       = "BigQuery jobs should have mandatory labels"
+  description = "Check if BigQuery jobs have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_job")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "bigquery_table_mandatory" {
+  title       = "BigQuery tables should have mandatory labels"
+  description = "Check if BigQuery tables have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_table")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "compute_disk_mandatory" {
+  title       = "Compute disks should have mandatory labels"
+  description = "Check if Compute disks have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_disk")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "compute_forwarding_rule_mandatory" {
+  title       = "Compute forwarding rules should have mandatory labels"
+  description = "Check if Compute forwarding rules have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "compute_image_mandatory" {
+  title       = "Compute images should have mandatory labels"
+  description = "Check if Compute images have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_image")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
 }
 
 control "compute_instance_mandatory" {
   title       = "Compute instances should have mandatory labels"
   description = "Check if Compute instances have mandatory labels."
   sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "compute_instance_template_mandatory" {
+  title       = "Compute instance templates should have mandatory labels"
+  description = "Check if Compute instance templates have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_instance_template")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "compute_snapshot_mandatory" {
+  title       = "Compute snapshots should have mandatory labels"
+  description = "Check if Compute snapshots have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_snapshot")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "dns_managed_zone_mandatory" {
+  title       = "DNS managed zones should have mandatory labels"
+  description = "Check if Dns managed zones have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "kms_key_mandatory" {
+  title       = "Kms keys should have mandatory labels"
+  description = "Check if Kms keys have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_kms_key")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "kubernetes_cluster_mandatory" {
+  title       = "Kubernetes clusters should have mandatory labels"
+  description = "Check if Kubernetes clusters have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_kubernetes_cluster")
+  param "mandatory_labels" {
+    default = var.mandatory_labels
+  }
+}
+
+control "sql_database_instance_mandatory" {
+  title       = "SQL database instances should have mandatory labels"
+  description = "Check if Sql database instances have mandatory labels."
+  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }

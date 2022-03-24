@@ -1,10 +1,11 @@
 variable "label_limit" {
   type        = number
   description = "Number of labels allowed on a resource. GCP allows up to 64 labels per resource."
+  default     = 60
 }
 
 locals {
-  limit_sql = <<EOT
+  limit_sql = <<-EOT
     with analysis as (
       select
         self_link,

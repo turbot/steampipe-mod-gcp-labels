@@ -1,10 +1,11 @@
 variable "prohibited_labels" {
   type        = list(string)
   description = "A list of prohibited labels to check for."
+  default     = ["Password", "Key"]
 }
 
 locals {
-  prohibited_sql = <<EOT
+  prohibited_sql = <<-EOT
     with analysis as (
       select
         self_link,

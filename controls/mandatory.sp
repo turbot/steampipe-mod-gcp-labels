@@ -1,10 +1,11 @@
 variable "mandatory_labels" {
   type        = list(string)
   description = "A list of mandatory labels to check for."
+  default     = ["Environment", "Owner"]
 }
 
 locals {
-  mandatory_sql = <<EOT
+  mandatory_sql = <<-EOT
     with analysis as (
       select
         self_link,

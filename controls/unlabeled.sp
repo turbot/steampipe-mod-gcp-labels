@@ -37,6 +37,10 @@ benchmark "unlabeled" {
     control.sql_database_instance_unlabeled,
     control.storage_bucket_unlabeled
   ]
+
+  tags = merge(local.gcp_labels_common_tags, {
+    type = "Benchmark"
+  })
 }
 
 control "bigquery_dataset_unlabeled" {

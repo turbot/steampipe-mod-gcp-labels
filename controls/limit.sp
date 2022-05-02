@@ -49,6 +49,10 @@ benchmark "limit" {
     control.sql_database_instance_label_limit,
     control.storage_bucket_label_limit
   ]
+
+  tags = merge(local.gcp_labels_common_tags, {
+    type = "Benchmark"
+  })
 }
 
 control "bigquery_dataset_label_limit" {

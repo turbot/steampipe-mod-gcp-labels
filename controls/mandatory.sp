@@ -53,6 +53,10 @@ benchmark "mandatory" {
     control.sql_database_instance_mandatory,
     control.storage_bucket_mandatory
   ]
+
+  tags = merge(local.gcp_labels_common_tags, {
+    type = "Benchmark"
+  })
 }
 
 control "bigquery_dataset_mandatory" {

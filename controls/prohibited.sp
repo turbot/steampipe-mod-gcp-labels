@@ -58,6 +58,10 @@ benchmark "prohibited" {
     control.sql_database_instance_prohibited,
     control.storage_bucket_prohibited
   ]
+
+  tags = merge(local.gcp_labels_common_tags, {
+    type = "Benchmark"
+  })
 }
 
 control "bigquery_dataset_prohibited" {
@@ -108,7 +112,7 @@ control "compute_forwarding_rule_prohibited" {
 control "compute_image_prohibited" {
   title       = "Compute images should not have prohibited labels"
   description = "Check if Compute images have any prohibited labels."
-  sql         = <<EOT
+  sql         = <<-EOT
     with analysis as (
       select
         self_link,

@@ -6,7 +6,9 @@ repository: "https://github.com/turbot/steampipe-mod-gcp-labels"
 
 Run label controls across all your GCP projects to look for unlabeled resources, missing labels , resources with too many labels, and more.
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png)
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
 
 ## References
 
@@ -24,22 +26,21 @@ Run label controls across all your GCP projects to look for unlabeled resources,
 
 ### Installation
 
-1) Download and install Steampipe (https://steampipe.io/downloads). Or use Brew:
+Download and install Steampipe (https://steampipe.io/downloads). Or use Brew:
 
-```shell
+```sh
 brew tap turbot/tap
 brew install steampipe
-
-steampipe -v
-steampipe version 0.8.0
 ```
 
-2) Install the GCP plugin:
-```shell
+Install the GCP plugin with [Steampipe](https://steampipe.io):
+
+```sh
 steampipe plugin install gcp
 ```
 
-3) Clone this repo:
+Clone:
+
 ```sh
 git clone https://github.com/turbot/steampipe-mod-gcp-labels.git
 cd steampipe-mod-gcp-labels
@@ -47,39 +48,43 @@ cd steampipe-mod-gcp-labels
 
 ### Usage
 
-#### Running benchmarks
+Start your dashboard server to get started:
 
-Preview running all benchmarks:
-```shell
-steampipe check all --dry-run
+```sh
+steampipe dashboard
 ```
 
+By default, the dashboard interface will then be launched in a new browser
+window at https://localhost:9194. From here, you can run benchmarks by
+selecting one or searching for a specific one.
+
+Instead of running benchmarks in a dashboard, you can also run them within your
+terminal with the `steampipe check` command:
+
 Run all benchmarks:
-```shell
+
+```sh
 steampipe check all
 ```
 
-Use Steampipe introspection to view all current benchmarks:
-```shell
-steampipe query "select resource_name, title, description from steampipe_benchmark;"
-```
+Run a single benchmark:
 
-Run an individual benchmark:
-```shell
+```sh
 steampipe check benchmark.unlabeled
 ```
 
-#### Running controls
-
-Use Steampipe introspection to view all current controls:
-```shell
-steampipe query "select resource_name, title, description from steampipe_control;"
-```
-
 Run a specific control:
-```shell
+
+```sh
 steampipe check control.storage_bucket_unlabeled
 ```
+
+Different output formats are also available, for more information please see
+[Output Formats](https://steampipe.io/docs/reference/cli/check#output-formats).
+
+### Credentials
+
+This mod uses the credentials configured in the [Steampipe GCP plugin](https://hub.steampipe.io/plugins/turbot/gcp).
 
 ### Configuration
 
@@ -145,8 +150,16 @@ done <<< "$INPUT"
 IFS=$OLDIFS
 ```
 
-## Get involved
 
-* Contribute: [GitHub Repo](https://github.com/turbot/steampipe-mod-gcp-labels)
+## Contributing
 
-* Community: [Slack Channel](https://join.slack.com/t/steampipe/shared_invite/zt-oij778tv-lYyRTWOTMQYBVAbtPSWs3g)
+If you have an idea for additional controls or just want to help maintain and extend this mod ([or others](https://github.com/topics/steampipe-mod)) we would love you to join the community and start contributing.
+
+- **[Join our Slack community →](https://steampipe.io/community/join)** and hang out with other Mod developers.
+
+Please see the [contribution guidelines](https://github.com/turbot/steampipe/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/turbot/steampipe/blob/main/CODE_OF_CONDUCT.md). All contributions are subject to the [Apache 2.0 open source license](https://github.com/turbot/steampipe-mod-gcp-labels/blob/main/LICENSE).
+
+Want to help but not sure where to start? Pick up one of the `help wanted` issues:
+
+- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
+- [GCP Labels Mod](https://github.com/turbot/steampipe-mod-gcp-labels/labels/help%20wanted)

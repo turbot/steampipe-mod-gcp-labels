@@ -6,9 +6,9 @@ repository: "https://github.com/turbot/steampipe-mod-gcp-labels"
 
 Run label controls across all your GCP projects to look for unlabeled resources, missing labels , resources with too many labels, and more.
 
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp_labels/update-doc-fix/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp_labels/update-doc-fix/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp_labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/update-doc-fix/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/update-doc-fix/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
 
 ## References
 

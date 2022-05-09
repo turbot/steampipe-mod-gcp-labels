@@ -2,7 +2,6 @@
 
 A GCP labels checking tool that can be used to look for unlabeled resources, missing labels, resources with too many labels, and more.
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png)
 Run checks in a dashboard:
 
 ![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png)

@@ -1,4 +1,4 @@
-# GCP Labels Tool
+# GCP Labels Mod for Steampipe
 
 A GCP labels checking tool that can be used to look for unlabeled resources, missing labels, resources with too many labels, and more.
 

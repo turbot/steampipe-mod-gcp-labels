@@ -49,19 +49,19 @@ benchmark "prohibited" {
     control.bigquery_dataset_prohibited,
     control.bigquery_job_prohibited,
     control.bigquery_table_prohibited,
+    control.bigtable_instance_prohibited,
     control.compute_disk_prohibited,
     control.compute_forwarding_rule_prohibited,
     control.compute_image_prohibited,
     control.compute_instance_prohibited,
     control.compute_snapshot_prohibited,
-    control.dns_managed_zone_prohibited,
-    control.sql_database_instance_prohibited,
-    control.storage_bucket_prohibited,
-    control.bigtable_instance_prohibited,
     control.dataproc_cluster_prohibited,
     control.dataproc_job_prohibited,
+    control.dns_managed_zone_prohibited,
     control.pubsub_subscription_prohibited,
-    control.pubsub_topic_prohibited
+    control.pubsub_topic_prohibited,
+    control.sql_database_instance_prohibited,
+    control.storage_bucket_prohibited
   ]
 
   tags = merge(local.gcp_labels_common_tags, {

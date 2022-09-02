@@ -40,19 +40,19 @@ benchmark "limit" {
     control.bigquery_dataset_label_limit,
     control.bigquery_job_label_limit,
     control.bigquery_table_label_limit,
+    control.bigtable_instance_label_limit,
     control.compute_disk_label_limit,
     control.compute_forwarding_rule_label_limit,
     control.compute_image_label_limit,
     control.compute_instance_label_limit,
     control.compute_snapshot_label_limit,
-    control.dns_managed_zone_label_limit,
-    control.sql_database_instance_label_limit,
-    control.storage_bucket_label_limit,
-    control.bigtable_instance_label_limit,
     control.dataproc_cluster_label_limit,
     control.dataproc_job_label_limit,
+    control.dns_managed_zone_label_limit,
     control.pubsub_subscription_label_limit,
-    control.pubsub_topic_label_limit
+    control.pubsub_topic_label_limit,
+    control.sql_database_instance_label_limit,
+    control.storage_bucket_label_limit
   ]
 
   tags = merge(local.gcp_labels_common_tags, {

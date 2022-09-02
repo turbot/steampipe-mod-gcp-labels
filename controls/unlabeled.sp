@@ -28,19 +28,19 @@ benchmark "unlabeled" {
     control.bigquery_dataset_unlabeled,
     control.bigquery_job_unlabeled,
     control.bigquery_table_unlabeled,
+    control.bigtable_instance_unlabeled,
     control.compute_disk_unlabeled,
     control.compute_forwarding_rule_unlabeled,
     control.compute_image_unlabeled,
     control.compute_instance_unlabeled,
     control.compute_snapshot_unlabeled,
-    control.dns_managed_zone_unlabeled,
-    control.sql_database_instance_unlabeled,
-    control.storage_bucket_unlabeled,
-    control.bigtable_instance_unlabeled,
     control.dataproc_cluster_unlabeled,
     control.dataproc_job_unlabeled,
+    control.dns_managed_zone_unlabeled,
     control.pubsub_subscription_unlabeled,
-    control.pubsub_topic_unlabeled
+    control.pubsub_topic_unlabeled,
+    control.sql_database_instance_unlabeled,
+    control.storage_bucket_unlabeled
   ]
 
   tags = merge(local.gcp_labels_common_tags, {

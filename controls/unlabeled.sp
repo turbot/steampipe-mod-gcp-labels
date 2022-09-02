@@ -35,7 +35,12 @@ benchmark "unlabeled" {
     control.compute_snapshot_unlabeled,
     control.dns_managed_zone_unlabeled,
     control.sql_database_instance_unlabeled,
-    control.storage_bucket_unlabeled
+    control.storage_bucket_unlabeled,
+    control.bigtable_instance_unlabeled,
+    control.dataproc_cluster_unlabeled,
+    control.dataproc_job_unlabeled,
+    control.pubsub_subscription_unlabeled,
+    control.pubsub_topic_unlabeled
   ]
 
   tags = merge(local.gcp_labels_common_tags, {
@@ -124,4 +129,34 @@ control "storage_bucket_unlabeled" {
   title       = "Storage buckets should be labeled"
   description = "Check if Storage buckets have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+}
+
+control "bigtable_instance_unlabeled" {
+  title       = "Bigtable instances should be labeled"
+  description = "Check if Bigtable instances have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+}
+
+control "dataproc_cluster_unlabeled" {
+  title       = "Dataproc cluster should be labeled"
+  description = "Check if Dataproc cluster have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+}
+
+control "dataproc_job_unlabeled" {
+  title       = "Dataproc job should be labeled"
+  description = "Check if Dataproc job have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dataproc_job")
+}
+
+control "pubsub_subscription_unlabeled" {
+  title       = "Pubsub subscription should be labeled"
+  description = "Check if Pubsub subscription have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+}
+
+control "pubsub_topic_unlabeled" {
+  title       = "Pubsub topic should be labeled"
+  description = "Check if Pubsub topic have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
 }

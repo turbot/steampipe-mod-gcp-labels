@@ -47,7 +47,12 @@ benchmark "limit" {
     control.compute_snapshot_label_limit,
     control.dns_managed_zone_label_limit,
     control.sql_database_instance_label_limit,
-    control.storage_bucket_label_limit
+    control.storage_bucket_label_limit,
+    control.bigtable_instance_label_limit,
+    control.dataproc_cluster_label_limit,
+    control.dataproc_job_label_limit,
+    control.pubsub_subscription_label_limit,
+    control.pubsub_topic_label_limit
   ]
 
   tags = merge(local.gcp_labels_common_tags, {
@@ -173,6 +178,51 @@ control "storage_bucket_label_limit" {
   title       = "Storage buckets should not exceed label limit"
   description = "Check if the number of labels on Storage buckets do not exceed the limit."
   sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "bigtable_instance_label_limit" {
+  title       = "Bigtable instances should not exceed label limit"
+  description = "Check if the number of labels on bigtable instance do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "dataproc_cluster_label_limit" {
+  title       = "Dataproc clusters should not exceed label limit"
+  description = "Check if the number of labels on dataproc cluster do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "dataproc_cluster")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "dataproc_job_label_limit" {
+  title       = "Dataproc jobs should not exceed label limit"
+  description = "Check if the number of labels on dataproc job do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_dataproc_job")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "pubsub_subscription_label_limit" {
+  title       = "Pubsub subscription should not exceed label limit"
+  description = "Check if the number of labels on Pubsub subscription do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "pubsub_topic_label_limit" {
+  title       = "Pubsub topics should not exceed label limit"
+  description = "Check if the number of labels on pubsub topic do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "label_limit" {
     default = var.label_limit
   }

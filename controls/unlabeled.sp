@@ -138,25 +138,25 @@ control "bigtable_instance_unlabeled" {
 }
 
 control "dataproc_cluster_unlabeled" {
-  title       = "Dataproc cluster should be labeled"
-  description = "Check if Dataproc cluster have at least 1 label."
+  title       = "Dataproc clusters should be labeled"
+  description = "Check if Dataproc clusters have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
 }
 
 control "dataproc_job_unlabeled" {
-  title       = "Dataproc job should be labeled"
-  description = "Check if Dataproc job have at least 1 label."
+  title       = "Dataproc jobs should be labeled"
+  description = "Check if Dataproc jobs have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dataproc_job")
 }
 
 control "pubsub_subscription_unlabeled" {
-  title       = "Pubsub subscription should be labeled"
-  description = "Check if Pubsub subscription have at least 1 label."
+  title       = "Pubsub subscriptions should be labeled"
+  description = "Check if Pubsub subscriptions have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
 }
 
 control "pubsub_topic_unlabeled" {
-  title       = "Pubsub topic should be labeled"
-  description = "Check if Pubsub topic have at least 1 label."
+  title       = "Pubsub topics should be labeled"
+  description = "Check if Pubsub topics have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
 }

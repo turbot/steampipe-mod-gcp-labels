@@ -49,12 +49,17 @@ benchmark "prohibited" {
     control.bigquery_dataset_prohibited,
     control.bigquery_job_prohibited,
     control.bigquery_table_prohibited,
+    control.bigtable_instance_prohibited,
     control.compute_disk_prohibited,
     control.compute_forwarding_rule_prohibited,
     control.compute_image_prohibited,
     control.compute_instance_prohibited,
     control.compute_snapshot_prohibited,
+    control.dataproc_cluster_prohibited,
+    control.dataproc_job_prohibited,
     control.dns_managed_zone_prohibited,
+    control.pubsub_subscription_prohibited,
+    control.pubsub_topic_prohibited,
     control.sql_database_instance_prohibited,
     control.storage_bucket_prohibited
   ]
@@ -190,6 +195,51 @@ control "storage_bucket_prohibited" {
   title       = "Storage buckets should not have prohibited labels"
   description = "Check if Storage buckets have any prohibited labels."
   sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  param "prohibited_labels" {
+    default = var.prohibited_labels
+  }
+}
+
+control "bigtable_instance_prohibited" {
+  title       = "Bigtable instances should not have prohibited labels"
+  description = "Check if bigtable instances have any prohibited labels."
+  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  param "prohibited_labels" {
+    default = var.prohibited_labels
+  }
+}
+
+control "dataproc_cluster_prohibited" {
+  title       = "Dataproc clusters should not have prohibited labels"
+  description = "Check if dataproc clusters have any prohibited labels."
+  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+  param "prohibited_labels" {
+    default = var.prohibited_labels
+  }
+}
+
+control "dataproc_job_prohibited" {
+  title       = "Dataproc jobs should not have prohibited labels"
+  description = "Check if dataproc jobs have any prohibited labels."
+  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_dataproc_job")
+  param "prohibited_labels" {
+    default = var.prohibited_labels
+  }
+}
+
+control "pubsub_subscription_prohibited" {
+  title       = "Pubsub subscriptions should not have prohibited labels"
+  description = "Check if pubsub subscriptions have any prohibited labels."
+  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  param "prohibited_labels" {
+    default = var.prohibited_labels
+  }
+}
+
+control "pubsub_topic_prohibited" {
+  title       = "Pubsub topics should not have prohibited labels"
+  description = "Check if pubsub topics have any prohibited labels."
+  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }

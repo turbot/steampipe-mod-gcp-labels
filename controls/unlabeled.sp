@@ -1,5 +1,5 @@
 locals {
-  unlabeled_sql = <<EOT
+  unlabeled_sql = <<-EOT
     select
       self_link as resource,
       case
@@ -28,12 +28,16 @@ benchmark "unlabeled" {
     control.bigquery_dataset_unlabeled,
     control.bigquery_job_unlabeled,
     control.bigquery_table_unlabeled,
+    control.bigtable_instance_unlabeled,
     control.compute_disk_unlabeled,
     control.compute_forwarding_rule_unlabeled,
     control.compute_image_unlabeled,
     control.compute_instance_unlabeled,
     control.compute_snapshot_unlabeled,
+    control.dataproc_cluster_unlabeled,
     control.dns_managed_zone_unlabeled,
+    control.pubsub_subscription_unlabeled,
+    control.pubsub_topic_unlabeled,
     control.sql_database_instance_unlabeled,
     control.storage_bucket_unlabeled
   ]
@@ -76,7 +80,7 @@ control "compute_forwarding_rule_unlabeled" {
 control "compute_image_unlabeled" {
   title       = "Compute images should be labeled"
   description = "Check if Compute images have at least 1 label."
-  sql         = <<EOT
+  sql         = <<-EOT
     select
       self_link as resource,
       case
@@ -116,7 +120,7 @@ control "dns_managed_zone_unlabeled" {
 
 control "sql_database_instance_unlabeled" {
   title       = "SQL database instances should be labeled"
-  description = "Check if Sql database instances have at least 1 label."
+  description = "Check if SQL database instances have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
 }
 
@@ -124,4 +128,28 @@ control "storage_bucket_unlabeled" {
   title       = "Storage buckets should be labeled"
   description = "Check if Storage buckets have at least 1 label."
   sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+}
+
+control "bigtable_instance_unlabeled" {
+  title       = "Bigtable instances should be labeled"
+  description = "Check if Bigtable instances have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+}
+
+control "dataproc_cluster_unlabeled" {
+  title       = "Dataproc clusters should be labeled"
+  description = "Check if Dataproc clusters have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+}
+
+control "pubsub_subscription_unlabeled" {
+  title       = "Pub/Sub subscriptions should be labeled"
+  description = "Check if Pub/Sub subscriptions have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+}
+
+control "pubsub_topic_unlabeled" {
+  title       = "Pub/Sub topics should be labeled"
+  description = "Check if Pub/Sub topics have at least 1 label."
+  sql         = replace(local.unlabeled_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
 }

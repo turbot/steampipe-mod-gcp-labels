@@ -40,12 +40,16 @@ benchmark "limit" {
     control.bigquery_dataset_label_limit,
     control.bigquery_job_label_limit,
     control.bigquery_table_label_limit,
+    control.bigtable_instance_label_limit,
     control.compute_disk_label_limit,
     control.compute_forwarding_rule_label_limit,
     control.compute_image_label_limit,
     control.compute_instance_label_limit,
     control.compute_snapshot_label_limit,
+    control.dataproc_cluster_label_limit,
     control.dns_managed_zone_label_limit,
+    control.pubsub_subscription_label_limit,
+    control.pubsub_topic_label_limit,
     control.sql_database_instance_label_limit,
     control.storage_bucket_label_limit
   ]
@@ -103,7 +107,7 @@ control "compute_forwarding_rule_label_limit" {
 control "compute_image_label_limit" {
   title       = "Compute images should not exceed label limit"
   description = "Check if the number of labels on Compute images do not exceed the limit."
-  sql         = <<EOT
+  sql         = <<-EOT
     with analysis as (
       select
         self_link,
@@ -173,6 +177,42 @@ control "storage_bucket_label_limit" {
   title       = "Storage buckets should not exceed label limit"
   description = "Check if the number of labels on Storage buckets do not exceed the limit."
   sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "bigtable_instance_label_limit" {
+  title       = "Bigtable instances should not exceed label limit"
+  description = "Check if the number of labels on Bigtable instances do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "dataproc_cluster_label_limit" {
+  title       = "Dataproc clusters should not exceed label limit"
+  description = "Check if the number of labels on Dataproc clusters do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "pubsub_subscription_label_limit" {
+  title       = "Pub/Sub subscriptions should not exceed label limit"
+  description = "Check if the number of labels on Pub/Sub subscriptions do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  param "label_limit" {
+    default = var.label_limit
+  }
+}
+
+control "pubsub_topic_label_limit" {
+  title       = "Pub/Sub topics should not exceed label limit"
+  description = "Check if the number of labels on Pub/Sub topics do not exceed the limit."
+  sql         = replace(local.limit_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "label_limit" {
     default = var.label_limit
   }

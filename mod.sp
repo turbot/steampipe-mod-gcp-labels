@@ -21,4 +21,10 @@ mod "gcp_labels" {
     description  = "Run label controls across all your GCP projects using Steampipe."
     image        = "/images/mods/turbot/gcp-labels-social-graphic.png"
   }
+
+  require {
+    plugin "gcp" {
+      version = "0.27.0"
+    }
+  }
 }

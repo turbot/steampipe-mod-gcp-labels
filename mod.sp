@@ -17,9 +17,9 @@ mod "gcp_labels" {
   categories    = ["gcp", "tags", "public cloud"]
 
   opengraph {
-    title        = "Steampipe Mod for GCP Labels"
-    description  = "Run label controls across all your GCP projects using Steampipe."
-    image        = "/images/mods/turbot/gcp-labels-social-graphic.png"
+    title       = "Steampipe Mod for GCP Labels"
+    description = "Run label controls across all your GCP projects using Steampipe."
+    image       = "/images/mods/turbot/gcp-labels-social-graphic.png"
   }
 
   require {

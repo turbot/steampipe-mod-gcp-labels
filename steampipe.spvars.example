@@ -1,3 +1,13 @@
 mandatory_labels = ["environment", "owner"]
 prohibited_labels = ["password", "key"]
 label_limit = 60
+expected_label_values = {
+  // Simple match
+  "environment": ["dev", "staging", "prod"]
+
+  // Match with SQL wildcard character
+  "cost_center": ["cc-%"]
+
+  // Escaping is required for exact matches on wildcard characters
+  "created_by": ["john\\_doe"]
+}

@@ -274,7 +274,7 @@ control "compute_image_expected_label_values" {
         else 'alarm'
       end as status,
       case
-        when bool_and(can_skip) then title || ' resource has no matching label keys.'
+        when bool_and(can_skip) then title || ' has no matching label keys.'
         when bool_and(status) then title || ' has expected label values for labels: ' || array_to_string(array_agg(label_key) filter(where status), ', ') || '.'
         else title || ' has unexpected label values for labels: ' || array_to_string(array_agg(label_key) filter(where not status), ', ') || '.'
       end as reason,

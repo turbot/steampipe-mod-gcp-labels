@@ -1,3 +1,9 @@
+## v0.7 [2023-07-06]
+
+_What's new?_
+
+- Added the Expected Label Values benchmark (`steampipe check benchmark.expected_label_values`), which allows users to check if labels with specific keys are using allowed values. ([#26](https://github.com/turbot/steampipe-mod-gcp-labels/pull/26))
+
 ## v0.6 [2022-09-09]
 
 _What's new?_

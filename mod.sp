@@ -24,7 +24,7 @@ mod "gcp_labels" {
 
   require {
     plugin "gcp" {
-      version = "0.27.0"
+      min_version = "0.27.0"
     }
   }
 }

@@ -1,3 +1,9 @@
+## v0.8 [2023-11-03]
+
+_Breaking changes_
+
+- Updated the plugin dependency section of the mod to use `min_version` instead of `version`. ([#31](https://github.com/turbot/steampipe-mod-gcp-labels/pull/31))
+
 ## v0.7 [2023-07-06]
 
 _What's new?_
@@ -13,17 +19,17 @@ _What's new?_
   - `dataproc_cluster_label_limit`
   - `pubsub_subscription_label_limit`
   - `pubsub_topic_label_limit`
-- New controls added to the `Mandatory` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))  
+- New controls added to the `Mandatory` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))
   - `bigtable_instance_mandatory`
   - `dataproc_cluster_mandatory`
   - `pubsub_subscription_mandatory`
   - `pubsub_topic_mandatory`
-- New controls added to the `Prohibited` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))  
+- New controls added to the `Prohibited` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))
   - `bigtable_instance_prohibited`
   - `dataproc_cluster_prohibited`
   - `pubsub_subscription_prohibited`
   - `pubsub_topic_prohibited`
-- New controls added to the `Unlabeled` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))  
+- New controls added to the `Unlabeled` benchmark:([#18](https://github.com/turbot/steampipe-mod-gcp-labels/pull/18))
   - `bigtable_instance_unlabeled`
   - `dataproc_cluster_unlabeled`
   - `pubsub_subscription_unlabeled`

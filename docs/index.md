@@ -1,7 +1,3 @@
----
-repository: "https://github.com/turbot/steampipe-mod-gcp-labels"
----
-
 # GCP Labels Mod
 
 Run label controls across all your GCP projects to look for unlabeled resources, missing labels , resources with too many labels, and more.
@@ -10,156 +6,111 @@ Run label controls across all your GCP projects to look for unlabeled resources,
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
 
-## References
-
-[GCP](https://cloud.google.com) provides on-demand cloud computing platforms and APIs to authenticated customers on a metered pay-as-you-go basis.
-
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
-
-[Steampipe Mods](https://steampipe.io/docs/reference/mod-resources#mod) are collections of `named queries`, and codified `controls` that can be used to test current configuration of your cloud resources against a desired configuration.
-
 ## Documentation
 
-- **[Benchmarks and controls →](https://hub.steampipe.io/mods/turbot/gcp_labels/controls)**
+- **[Benchmarks and controls →](https://hub.powerpipe.io/mods/turbot/gcp_labels/controls)**
 
-## Getting started
+## Getting Started
 
 ### Installation
 
-Download and install Steampipe (https://steampipe.io/downloads). Or use Brew:
+Install Powerpipe (https://powerpipe.io/downloads), or use Brew:
 
 ```sh
-brew tap turbot/tap
-brew install steampipe
+brew install turbot/tap/powerpipe
 ```
 
-Install the GCP plugin with [Steampipe](https://steampipe.io):
+This mod also requires [Steampipe](https://steampipe.io) with the [GCP plugin](https://hub.steampipe.io/plugins/turbot/gcp) as the data source. Install Steampipe (https://steampipe.io/downloads), or use Brew:
 
 ```sh
+brew install turbot/tap/steampipe
 steampipe plugin install gcp
 ```
 
-Clone:
+Steampipe will automatically use your default GCP credentials. Optionally, you can [setup multiple projects](https://hub.steampipe.io/plugins/turbot/gcp#multi-project-connections).
+
+Finally, install the mod:
 
 ```sh
-git clone https://github.com/turbot/steampipe-mod-gcp-labels.git
-cd steampipe-mod-gcp-labels
+mkdir dashboards
+cd dashboards
+powerpipe mod init
+powerpipe mod install github.com/turbot/powerpipe-mod-gcp-compliance
 ```
 
-### Usage
+### Browsing Dashboards
 
-Start your dashboard server to get started:
+Start Steampipe as the data source:
 
 ```sh
-steampipe dashboard
+steampipe service start
 ```
 
-By default, the dashboard interface will then be launched in a new browser
-window at http://localhost:9194. From here, you can run benchmarks by
-selecting one or searching for a specific one.
+Start the dashboard server:
+
+```sh
+powerpipe server
+```
+
+Browse and view your dashboards at **http://localhost:9033**.
+
+### Running Checks in Your Terminal
 
 Instead of running benchmarks in a dashboard, you can also run them within your
-terminal with the `steampipe check` command:
+terminal with the `powerpipe benchmark` command:
 
-Run all benchmarks:
+List available benchmarks:
 
 ```sh
-steampipe check all
+powerpipe benchmark list
 ```
 
-Run a single benchmark:
+Run a benchmark:
 
 ```sh
-steampipe check benchmark.unlabeled
-```
-
-Run a specific control:
-
-```sh
-steampipe check control.storage_bucket_unlabeled
+powerpipe benchmark run azure_tags.benchmark.limit
 ```
 
 Different output formats are also available, for more information please see
-[Output Formats](https://steampipe.io/docs/reference/cli/check#output-formats).
-
-### Credentials
-
-This mod uses the credentials configured in the [Steampipe GCP plugin](https://hub.steampipe.io/plugins/turbot/gcp).
+[Output Formats](https://powerpipe.io/docs/reference/cli/benchmark#output-formats).
 
 ### Configuration
 
-Several benchmarks have [input variables](https://steampipe.io/docs/using-steampipe/mod-variables) that can be configured to better match your environment and requirements. Each variable has a default defined in its source file, e.g., `controls/limit.sp`, but these can be overriden in several ways:
+Several benchmarks have [input variables](https://steampipe.io/docs/using-steampipe/mod-variables) that can be configured to better match your environment and requirements. Each variable has a default defined in its source file, e.g., `controls/limit.sp`, but these can be overridden in several ways:
 
-- Copy and rename the `steampipe.spvars.example` file to `steampipe.spvars`, and then modify the variable values inside that file
-- Pass in a value on the command line:
-  ```shell
-  steampipe check benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
-  ```
-- Set an environment variable:
-  ```shell
-  SP_VAR_mandatory_labels='["application", "environment", "department", "owner"]' steampipe check control.compute_instance_mandatory
-  ```
-  - Note: When using environment variables, if the variable is defined in `steampipe.spvars` or passed in through the command line, either of those will take precedence over the environment variable value. For more information on variable definition precedence, please see the link below.
+It's easiest to setup your vars file, starting with the sample:
+
+```sh
+cp powerpipe.ppvar.example powerpipe.ppvars
+vi powerpipe.ppvars
+```
+
+Alternatively you can pass variables on the command line:
+
+```sh
+powerpipe benchmark run gcp_labels.benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
+```
+
+Or through environment variables:
+
+```sh
+export PP_VAR_mandatory_labels='["application", "environment", "department"]'
+powerpipe benchmark run gcp_labels.benchmark.mandatory
+```
 
 These are only some of the ways you can set variables. For a full list, please see [Passing Input Variables](https://steampipe.io/docs/using-steampipe/mod-variables#passing-input-variables).
 
-## Advanced usage
+## Open Source & Contributing
 
-### Remediation
+This repository is published under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). Please see our [code of conduct](https://github.com/turbot/.github/blob/main/CODE_OF_CONDUCT.md). We look forward to collaborating with you!
 
-Using the control output and the gcloud CLI, you can remediate various label issues.
+[Steampipe](https://steampipe.io) and [Powerpipe](https://powerpipe.io) are products produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). They are distributed under our commercial terms. Others are allowed to make their own distribution of the software, but cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
 
-For instance, with the results of the `compute_instance_mandatory` control, you can add missing labels with the gcloud CLI:
+## Get Involved
 
-```bash
-#!/bin/bash
+**[Join #powerpipe on Slack →](https://turbot.com/community/join)**
 
-OLDIFS=$IFS
-IFS='#'
+Want to help but don't know where to start? Pick up one of the `help wanted` issues:
 
-INPUT=$(steampipe check control.compute_instance_mandatory --var 'mandatory_labels=["application"]' --output csv --header=false --separator '#' | grep 'alarm')
-[ -z "$INPUT" ] && { echo "No instances in alarm, aborting"; exit 0; }
-
-while read -r group_id title description control_id control_title control_description reason resource status location project
-do
-  # Get the instance name from the self-link, e.g., https://www.googleapis.com/compute/v1/projects/my-project/zones/us-central1-a/instances/my-instance
-  instance_name=$(echo "$resource" | rev | cut -d "/" -f1 | rev)
-  gcloud compute instances add-labels "$instance_name" --labels=application=my_application --zone=${location}
-done <<< "$INPUT"
-
-IFS=$OLDIFS
-```
-
-To remove prohibited labels from Compute instances:
-```bash
-#!/bin/bash
-
-OLDIFS=$IFS
-IFS='#'
-
-INPUT=$(steampipe check control.compute_instance_mandatory --var 'prohibited_labels=["password"]' --output csv --header=false --separator '#' | grep 'alarm')
-[ -z "$INPUT" ] && { echo "No instances in alarm, aborting"; exit 0; }
-
-while read -r group_id title description control_id control_title control_description reason resource status location project
-do
-  # Get the instance name from the self-link, e.g., https://www.googleapis.com/compute/v1/projects/my-project/zones/us-central1-a/instances/my-instance
-  instance_name=$(echo "$resource" | rev | cut -d "/" -f1 | rev)
-  gcloud compute instances remove-labels ${instance_name} --labels=password --zone=${location}
-done <<< "$INPUT"
-
-IFS=$OLDIFS
-```
-
-
-## Contributing
-
-If you have an idea for additional controls or just want to help maintain and extend this mod ([or others](https://github.com/topics/steampipe-mod)) we would love you to join the community and start contributing.
-
-- **[Join #steampipe on Slack →](https://turbot.com/community/join)** and hang out with other Mod developers.
-
-Please see the [contribution guidelines](https://github.com/turbot/steampipe/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/turbot/steampipe/blob/main/CODE_OF_CONDUCT.md). All contributions are subject to the [Apache 2.0 open source license](https://github.com/turbot/steampipe-mod-gcp-labels/blob/main/LICENSE).
-
-Want to help but not sure where to start? Pick up one of the `help wanted` issues:
-
-- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
+- [Powerpipe](https://github.com/turbot/powerpipe/labels/help%20wanted)
 - [GCP Labels Mod](https://github.com/turbot/steampipe-mod-gcp-labels/labels/help%20wanted)

@@ -7,11 +7,13 @@ A GCP labels checking tool that can be used to look for unlabeled resources, mis
 
 Run checks in a dashboard:
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png)
+<!-- ![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png) -->
+![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/add-new-checks/docs/gcp_labels_dashboard.png)
 
 Or in a terminal:
 
-![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png)
+<!-- ![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png) -->
+![image](https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/add-new-checks/docs/gcp_labels_mod_terminal.png)
 
 ## Documentation
 
@@ -42,7 +44,7 @@ Finally, install the mod:
 mkdir dashboards
 cd dashboards
 powerpipe mod init
-powerpipe mod install github.com/turbot/powerpipe-mod-gcp-compliance
+powerpipe mod install github.com/turbot/steampipe-mod-gcp-labels
 ```
 
 ### Browsing Dashboards
@@ -75,7 +77,7 @@ powerpipe benchmark list
 Run a benchmark:
 
 ```sh
-powerpipe benchmark run azure_tags.benchmark.limit
+powerpipe benchmark run gcp_labels.benchmark.unlabeled
 ```
 
 Different output formats are also available, for more information please see
@@ -83,29 +85,68 @@ Different output formats are also available, for more information please see
 
 ### Configuration
 
-Several benchmarks have [input variables](https://steampipe.io/docs/using-steampipe/mod-variables) that can be configured to better match your environment and requirements. Each variable has a default defined in its source file, e.g., `controls/limit.sp`, but these can be overridden in several ways:
+Several benchmarks have [input variables](https://powerpipe.io/docs/build/mod-variables#input-variables) that can be configured to better match your environment and requirements. Each variable has a default defined in its source file, e.g., `controls/limit.sp`, but these can be overridden in several ways:
 
-It's easiest to setup your vars file, starting with the sample:
+- Copy and rename the `powerpipe.ppvars.example` file to `powerpipe.ppvars`, and then modify the variable values inside that file
+- Pass in a value on the command line:
+
+  ```sh
+  powerpipe benchmark run gcp_labels.benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
+  ```
+
+- Set an environment variable:
+
+  ```sh
+  export PP_VAR_mandatory_labels='["application", "environment", "department"]'
+  powerpipe benchmark run gcp_labels.benchmark.mandatory
+  ```
+
+ - Note: When using environment variables, if the variable is defined in `powerpipe.ppvars` or passed in through the command line, either of those will take precedence over the environment variable value. For more information on variable definition precedence, please see the link below.
+
+These are only some of the ways you can set variables. For a full list, please see [Passing Input Variables](https://powerpipe.io/docs/build/mod-variables#passing-input-variables).
+
+### Remediation
+
+Using the control output and the gcloud CLI, you can remediate various label issues.
+
+For instance, with the results of the `compute_instance_mandatory` control, you can add missing labels with the gcloud CLI:
 
 ```sh
-cp powerpipe.ppvar.example powerpipe.ppvars
-vi powerpipe.ppvars
+#!/bin/bash
+
+OLDIFS=$IFS
+IFS='#'
+
+INPUT=$(powerpipe control run compute_instance_mandatory --var 'mandatory_labels=["application"]' --output csv --header=false --separator '#' | grep 'alarm')
+[ -z "$INPUT" ] && { echo "No instances in alarm, aborting"; exit 0; }
+
+while read -r group_id title description control_id control_title control_description reason resource status location project
+do
+  # Get the instance name from the self-link, e.g., https://www.googleapis.com/compute/v1/projects/my-project/zones/us-central1-a/instances/my-instance
+  instance_name=$(echo "$resource" | rev | cut -d "/" -f1 | rev)
+  gcloud compute instances add-labels "$instance_name" --labels=application=my_application --zone=${location}
+done <<< "$INPUT"
+
+IFS=$OLDIFS
 ```
 
-Alternatively you can pass variables on the command line:
-
+To remove prohibited labels from Compute instances:
 ```sh
-powerpipe benchmark run gcp_labels.benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
+#!/bin/bash
+
+OLDIFS=$IFS
+IFS='#'
+
+INPUT=$(powerpipe control run compute_instance_mandatory --var 'prohibited_labels=["password"]' --output csv --header=false --separator '#' | grep 'alarm')
+[ -z "$INPUT" ] && { echo "No instances in alarm, aborting"; exit 0; }
+
+while read -r group_id title description control_id control_title control_description reason resource status location project
+do
+  # Get the instance name from the self-link, e.g., https://www.googleapis.com/compute/v1/projects/my-project/zones/us-central1-a/instances/my-instance
+  instance_name=$(echo "$resource" | rev | cut -d "/" -f1 | rev)
+  gcloud compute instances remove-labels ${instance_name} --labels=password --zone=${location}
+done <<< "$INPUT"
 ```
-
-Or through environment variables:
-
-```sh
-export PP_VAR_mandatory_labels='["application", "environment", "department"]'
-powerpipe benchmark run gcp_labels.benchmark.mandatory
-```
-
-These are only some of the ways you can set variables. For a full list, please see [Passing Input Variables](https://steampipe.io/docs/using-steampipe/mod-variables#passing-input-variables).
 
 ## Open Source & Contributing
 

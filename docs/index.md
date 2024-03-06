@@ -2,12 +2,9 @@
 
 Run label controls across all your GCP projects to look for unlabeled resources, missing labels , resources with too many labels, and more.
 
-<!-- <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
 <img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/> -->
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/add-new-checks/docs/gcp_labels_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/add-new-checks/docs/gcp_labels_mandatory_dashboard.png" width="50%" type="thumbnail"/>
-<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/add-new-checks/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
+<img src="https://raw.githubusercontent.com/turbot/steampipe-mod-gcp-labels/main/docs/gcp_labels_mod_terminal.png" width="50%" type="thumbnail"/>
 
 ## Documentation
 
@@ -77,25 +74,28 @@ powerpipe benchmark run gcp_labels.benchmark.unlabeled
 Different output formats are also available, for more information please see
 [Output Formats](https://powerpipe.io/docs/reference/cli/benchmark#output-formats).
 
-### Configuration
+### Configure Variables
 
 Several benchmarks have [input variables](https://powerpipe.io/docs/build/mod-variables#input-variables) that can be configured to better match your environment and requirements. Each variable has a default defined in its source file, e.g., `controls/limit.sp`, but these can be overridden in several ways:
 
-- Copy and rename the `powerpipe.ppvars.example` file to `powerpipe.ppvars`, and then modify the variable values inside that file
-- Pass in a value on the command line:
+It's easiest to setup your vars file, starting with the sample:
 
-  ```sh
-  powerpipe benchmark run gcp_labels.benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
-  ```
+```sh
+cp steampipe.spvars.example steampipe.spvars
+vi steampipe.spvars
+```
+Alternatively you can pass variables on the command line:
 
-- Set an environment variable:
+```sh
+powerpipe benchmark run gcp_labels.benchmark.mandatory --var 'mandatory_labels=["application", "environment", "department", "owner"]'
+```
 
-  ```sh
-  export PP_VAR_mandatory_labels='["application", "environment", "department"]'
-  powerpipe benchmark run gcp_labels.benchmark.mandatory
-  ```
+Or through environment variables:
 
- - Note: When using environment variables, if the variable is defined in `powerpipe.ppvars` or passed in through the command line, either of those will take precedence over the environment variable value. For more information on variable definition precedence, please see the link below.
+```sh
+export PP_VAR_mandatory_labels='["application", "environment", "department"]'
+powerpipe benchmark run gcp_labels.benchmark.mandatory
+```
 
 These are only some of the ways you can set variables. For a full list, please see [Passing Input Variables](https://powerpipe.io/docs/build/mod-variables#passing-input-variables).
 

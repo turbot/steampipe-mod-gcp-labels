@@ -5,11 +5,14 @@ variable "prohibited_labels" {
 }
 
 locals {
-  prohibited_sql = <<-EOT
+  prohibited_sql = <<-EOQ
     with analysis as (
       select
         self_link,
-        array_agg(k) as prohibited_labels
+        array_agg(k) as prohibited_labels,
+        location,
+        project,
+        _ctx
       from
         __TABLE_NAME__,
         jsonb_object_keys(labels) as k,
@@ -17,7 +20,10 @@ locals {
       where
         k = prohibited_key
       group by
-        self_link
+        self_link,
+        location,
+        project,
+        _ctx
     )
     select
       r.self_link as resource,
@@ -28,18 +34,14 @@ locals {
       case
         when a.prohibited_labels <> array[]::text[] then r.title || ' has prohibited labels: ' || array_to_string(a.prohibited_labels, ', ') || '.'
         else r.title || ' has no prohibited labels.'
-      end as reason,
-      __DIMENSIONS__
+      end as reason
+      ${replace(local.tag_dimensions_qualifier_sql, "__QUALIFIER__", "r.")}
+      ${replace(local.common_dimensions_qualifier_sql, "__QUALIFIER__", "r.")}      
     from
       __TABLE_NAME__ as r
     full outer join
       analysis as a on a.self_link = r.self_link
-  EOT
-}
-
-locals {
-  prohibited_sql_project  = replace(local.prohibited_sql, "__DIMENSIONS__", "r.project")
-  prohibited_sql_location = replace(local.prohibited_sql, "__DIMENSIONS__", "r.location, r.project")
+  EOQ
 }
 
 benchmark "prohibited" {
@@ -71,7 +73,7 @@ benchmark "prohibited" {
 control "bigquery_dataset_prohibited" {
   title       = "BigQuery datasets should not have prohibited labels"
   description = "Check if BigQuery datasets have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_bigquery_dataset")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_bigquery_dataset")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -80,7 +82,7 @@ control "bigquery_dataset_prohibited" {
 control "bigquery_job_prohibited" {
   title       = "BigQuery jobs should not have prohibited labels"
   description = "Check if BigQuery jobs have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_bigquery_job")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_bigquery_job")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -89,7 +91,7 @@ control "bigquery_job_prohibited" {
 control "bigquery_table_prohibited" {
   title       = "BigQuery tables should not have prohibited labels"
   description = "Check if BigQuery tables have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_bigquery_table")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_bigquery_table")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -98,7 +100,7 @@ control "bigquery_table_prohibited" {
 control "compute_disk_prohibited" {
   title       = "Compute disks should not have prohibited labels"
   description = "Check if Compute disks have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_disk")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_compute_disk")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -107,7 +109,7 @@ control "compute_disk_prohibited" {
 control "compute_forwarding_rule_prohibited" {
   title       = "Compute forwarding rules should not have prohibited labels"
   description = "Check if Compute forwarding rules have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -116,7 +118,7 @@ control "compute_forwarding_rule_prohibited" {
 control "compute_image_prohibited" {
   title       = "Compute images should not have prohibited labels"
   description = "Check if Compute images have any prohibited labels."
-  sql         = <<-EOT
+  sql         = <<-EOQ
     with analysis as (
       select
         self_link,
@@ -148,7 +150,7 @@ control "compute_image_prohibited" {
     full outer join
       analysis as a on a.self_link = r.self_link
     where source_project = project
-  EOT
+  EOQ
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -157,7 +159,7 @@ control "compute_image_prohibited" {
 control "compute_instance_prohibited" {
   title       = "Compute instances should not have prohibited labels"
   description = "Check if Compute instances have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_compute_instance")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -166,7 +168,7 @@ control "compute_instance_prohibited" {
 control "compute_snapshot_prohibited" {
   title       = "Compute snapshots should not have prohibited labels"
   description = "Check if Compute snapshots have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_compute_snapshot")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_compute_snapshot")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -175,7 +177,7 @@ control "compute_snapshot_prohibited" {
 control "dns_managed_zone_prohibited" {
   title       = "DNS managed zones should not have prohibited labels"
   description = "Check if DNS managed zones have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_dns_managed_zone")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -184,7 +186,7 @@ control "dns_managed_zone_prohibited" {
 control "sql_database_instance_prohibited" {
   title       = "SQL database instances should not have prohibited labels"
   description = "Check if SQL database instances have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_sql_database_instance")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -193,7 +195,7 @@ control "sql_database_instance_prohibited" {
 control "storage_bucket_prohibited" {
   title       = "Storage buckets should not have prohibited labels"
   description = "Check if Storage buckets have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_storage_bucket")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -202,7 +204,7 @@ control "storage_bucket_prohibited" {
 control "bigtable_instance_prohibited" {
   title       = "Bigtable instances should not have prohibited labels"
   description = "Check if Bigtable instances have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_bigtable_instance")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -211,7 +213,7 @@ control "bigtable_instance_prohibited" {
 control "dataproc_cluster_prohibited" {
   title       = "Dataproc clusters should not have prohibited labels"
   description = "Check if Dataproc clusters have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_dataproc_cluster")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -220,7 +222,7 @@ control "dataproc_cluster_prohibited" {
 control "pubsub_subscription_prohibited" {
   title       = "Pub/Sub subscriptions should not have prohibited labels"
   description = "Check if Pub/Sub subscriptions have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_pubsub_subscription")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }
@@ -229,7 +231,7 @@ control "pubsub_subscription_prohibited" {
 control "pubsub_topic_prohibited" {
   title       = "Pub/Sub topics should not have prohibited labels"
   description = "Check if Pub/Sub topics have any prohibited labels."
-  sql         = replace(local.prohibited_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
+  sql         = replace(local.prohibited_sql, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "prohibited_labels" {
     default = var.prohibited_labels
   }

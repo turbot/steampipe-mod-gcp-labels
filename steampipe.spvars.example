@@ -1,3 +1,6 @@
+common_dimensions = ["project_id", "location", "resource_group"]
+tag_dimensions    = []
+
 mandatory_labels = ["environment", "owner"]
 prohibited_labels = ["password", "key"]
 label_limit = 60

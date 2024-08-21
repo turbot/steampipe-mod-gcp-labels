@@ -13,6 +13,7 @@ locals {
         labels ?& $1 as has_mandatory_labels,
         to_jsonb($1) - array(select jsonb_object_keys(labels)) as missing_labels,
         location,
+        labels,
         project,
         _ctx
       from

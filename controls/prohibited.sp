@@ -21,6 +21,7 @@ locals {
         k = prohibited_key
       group by
         self_link,
+        labels,
         location,
         project,
         _ctx

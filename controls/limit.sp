@@ -13,6 +13,7 @@ locals {
         cardinality(array(select jsonb_object_keys(labels))) as num_label_keys,
         location,
         project,
+        labels,
         _ctx
       from
         __TABLE_NAME__

@@ -34,6 +34,7 @@ locals {
         labels ->> (expected_label_values ->> 'key') as current_value,
         location,
         project,
+        labels,
         _ctx
       from
         raw_data
@@ -51,6 +52,7 @@ locals {
         label_key,
         current_value,
         location,
+        labels,
         project,
         _ctx
       from
@@ -69,6 +71,7 @@ locals {
         end as reason,
         bool_or(has_no_matching_labels) as can_skip,
         current_value,
+        labels,
         location,
         project,
         _ctx
@@ -79,6 +82,7 @@ locals {
         title,
         label_key,
         current_value,
+        labels,
         location,
         project,
         _ctx
@@ -104,6 +108,7 @@ locals {
       title,
         location,
         project,
+        labels,
         _ctx
     union all
     select

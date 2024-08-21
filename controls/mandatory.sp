@@ -5,14 +5,17 @@ variable "mandatory_labels" {
 }
 
 locals {
-  mandatory_sql = <<-EOT
+  mandatory_sql = <<-EOQ
     with analysis as (
       select
         self_link,
         title,
         labels ?& $1 as has_mandatory_labels,
         to_jsonb($1) - array(select jsonb_object_keys(labels)) as missing_labels,
-        __DIMENSIONS__
+        location,
+        labels,
+        project,
+        _ctx
       from
         __TABLE_NAME__
     )
@@ -25,16 +28,12 @@ locals {
       case
         when has_mandatory_labels then title || ' has all mandatory labels.'
         else title || ' is missing labels: ' || array_to_string(array(select jsonb_array_elements_text(missing_labels)), ', ') || '.'
-      end as reason,
-      __DIMENSIONS__
+      end as reason
+      ${local.tag_dimensions_sql}
+      ${local.common_dimensions_sql}
     from
       analysis
-  EOT
-}
-
-locals {
-  mandatory_sql_project  = replace(local.mandatory_sql, "__DIMENSIONS__", "project")
-  mandatory_sql_location = replace(local.mandatory_sql, "__DIMENSIONS__", "location, project")
+  EOQ
 }
 
 benchmark "mandatory" {
@@ -66,7 +65,7 @@ benchmark "mandatory" {
 control "bigquery_dataset_mandatory" {
   title       = "BigQuery datasets should have mandatory labels"
   description = "Check if BigQuery datasets have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_dataset")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_bigquery_dataset")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -75,7 +74,7 @@ control "bigquery_dataset_mandatory" {
 control "bigquery_job_mandatory" {
   title       = "BigQuery jobs should have mandatory labels"
   description = "Check if BigQuery jobs have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_job")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_bigquery_job")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -84,7 +83,7 @@ control "bigquery_job_mandatory" {
 control "bigquery_table_mandatory" {
   title       = "BigQuery tables should have mandatory labels"
   description = "Check if BigQuery tables have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigquery_table")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_bigquery_table")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -93,7 +92,7 @@ control "bigquery_table_mandatory" {
 control "compute_disk_mandatory" {
   title       = "Compute disks should have mandatory labels"
   description = "Check if Compute disks have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_disk")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_compute_disk")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -102,7 +101,7 @@ control "compute_disk_mandatory" {
 control "compute_forwarding_rule_mandatory" {
   title       = "Compute forwarding rules should have mandatory labels"
   description = "Check if Compute forwarding rules have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -111,7 +110,7 @@ control "compute_forwarding_rule_mandatory" {
 control "compute_image_mandatory" {
   title       = "Compute images should have mandatory labels"
   description = "Check if Compute images have mandatory labels."
-  sql         = <<-EOT
+  sql         = <<-EOQ
     with analysis as (
       select
         self_link,
@@ -139,7 +138,7 @@ control "compute_image_mandatory" {
       project
     from
       analysis
-  EOT
+  EOQ
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -148,7 +147,7 @@ control "compute_image_mandatory" {
 control "compute_instance_mandatory" {
   title       = "Compute instances should have mandatory labels"
   description = "Check if Compute instances have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_compute_instance")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -157,7 +156,7 @@ control "compute_instance_mandatory" {
 control "compute_snapshot_mandatory" {
   title       = "Compute snapshots should have mandatory labels"
   description = "Check if Compute snapshots have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_compute_snapshot")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_compute_snapshot")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -166,7 +165,7 @@ control "compute_snapshot_mandatory" {
 control "dns_managed_zone_mandatory" {
   title       = "DNS managed zones should have mandatory labels"
   description = "Check if Dns managed zones have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_dns_managed_zone")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -175,7 +174,7 @@ control "dns_managed_zone_mandatory" {
 control "sql_database_instance_mandatory" {
   title       = "SQL database instances should have mandatory labels"
   description = "Check if SQL database instances have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_sql_database_instance")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -184,7 +183,7 @@ control "sql_database_instance_mandatory" {
 control "storage_bucket_mandatory" {
   title       = "Storage buckets should have mandatory labels"
   description = "Check if Storage buckets have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_storage_bucket")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -193,7 +192,7 @@ control "storage_bucket_mandatory" {
 control "bigtable_instance_mandatory" {
   title       = "Bigtable instances should have mandatory labels"
   description = "Check if Bigtable instances have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_bigtable_instance")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -202,7 +201,7 @@ control "bigtable_instance_mandatory" {
 control "dataproc_cluster_mandatory" {
   title       = "Dataproc clusters should have mandatory labels"
   description = "Check if Dataproc clusters have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_dataproc_cluster")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -211,7 +210,7 @@ control "dataproc_cluster_mandatory" {
 control "pubsub_subscription_mandatory" {
   title       = "Pub/Sub subscriptions should have mandatory labels"
   description = "Check if Pub/Sub subscriptions have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_pubsub_subscription")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }
@@ -220,7 +219,7 @@ control "pubsub_subscription_mandatory" {
 control "pubsub_topic_mandatory" {
   title       = "Pubsub topics should have mandatory labels"
   description = "Check if Pub/Sub topics have mandatory labels."
-  sql         = replace(local.mandatory_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
+  sql         = replace(local.mandatory_sql, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "mandatory_labels" {
     default = var.mandatory_labels
   }

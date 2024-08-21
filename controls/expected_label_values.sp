@@ -3,7 +3,7 @@ variable "expected_label_values" {
   description = "Map of expected values for various labels, e.g., {\"environment\": [\"Prod\", \"Staging\", \"Dev%\"]}. SQL wildcards '%' and '_' can be used for matching values. These characters must be escaped for exact matches, e.g., {\"created_by\": [\"test\\_user\"]}."
 
   default = {
-    "environment": ["dev", "staging", "prod"]
+    "environment" : ["dev", "staging", "prod"]
   }
 }
 
@@ -16,7 +16,9 @@ locals {
         title,
         labels,
         row_to_json(json_each($1)) as expected_label_values,
-        __DIMENSIONS__
+        location,
+        project,
+        _ctx
       from
         __TABLE_NAME__
       where
@@ -30,7 +32,10 @@ locals {
         expected_label_values ->> 'key' as label_key,
         jsonb_array_elements_text((expected_label_values ->> 'value')::jsonb) as expected_values,
         labels ->> (expected_label_values ->> 'key') as current_value,
-        __DIMENSIONS__
+        location,
+        project,
+        labels,
+        _ctx
       from
         raw_data
     ),
@@ -46,7 +51,10 @@ locals {
         end as has_no_matching_labels,
         label_key,
         current_value,
-        __DIMENSIONS__
+        location,
+        labels,
+        project,
+        _ctx
       from
         exploded_expected_label_values
     ),
@@ -63,7 +71,10 @@ locals {
         end as reason,
         bool_or(has_no_matching_labels) as can_skip,
         current_value,
-        __DIMENSIONS__
+        labels,
+        location,
+        project,
+        _ctx
       from
         analysis
       group by
@@ -71,7 +82,10 @@ locals {
         title,
         label_key,
         current_value,
-        __DIMENSIONS__
+        labels,
+        location,
+        project,
+        _ctx
     )
     select
       self_link as resource,
@@ -84,20 +98,25 @@ locals {
         when bool_and(can_skip) then title || ' has no matching label keys.'
         when bool_and(status) then title || ' has expected label values for labels: ' || array_to_string(array_agg(label_key) filter(where status), ', ') || '.'
         else title || ' has unexpected label values for labels: ' || array_to_string(array_agg(label_key) filter(where not status), ', ') || '.'
-      end as reason,
-      __DIMENSIONS__
+      end as reason
+      ${local.tag_dimensions_sql}
+      ${local.common_dimensions_sql}
     from
       status_by_label
     group by
       self_link,
       title,
-      __DIMENSIONS__
+        location,
+        project,
+        labels,
+        _ctx
     union all
     select
       self_link as resource,
       'skip' as status,
-      title || ' has no labels.' as reason,
-      __DIMENSIONS__
+      title || ' has no labels.' as reason
+      ${local.tag_dimensions_sql}
+      ${local.common_dimensions_sql}
     from
       __TABLE_NAME__
     where
@@ -106,19 +125,15 @@ locals {
     select
       self_link as resource,
       'skip' as status,
-      title || ' has labels but no expected label values are set.' as reason,
-      __DIMENSIONS__
+      title || ' has labels but no expected label values are set.' as reason
+      ${local.tag_dimensions_sql}
+      ${local.common_dimensions_sql}
     from
       __TABLE_NAME__
     where
       $1::text = '{}'
       and labels is not null
   EOQ
-}
-
-locals {
-  expected_label_values_sql_project  = replace(local.expected_label_values_sql, "__DIMENSIONS__", "project")
-  expected_label_values_sql_location = replace(local.expected_label_values_sql, "__DIMENSIONS__", "location, project")
 }
 
 benchmark "expected_label_values" {
@@ -150,7 +165,7 @@ benchmark "expected_label_values" {
 control "bigquery_dataset_expected_label_values" {
   title       = "BigQuery datasets should have appropriate label values"
   description = "Check if BigQuery datasets have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_bigquery_dataset")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_bigquery_dataset")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -159,7 +174,7 @@ control "bigquery_dataset_expected_label_values" {
 control "bigquery_job_expected_label_values" {
   title       = "BigQuery jobs should have appropriate label values"
   description = "Check if BigQuery jobs have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_bigquery_job")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_bigquery_job")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -168,7 +183,7 @@ control "bigquery_job_expected_label_values" {
 control "bigquery_table_expected_label_values" {
   title       = "BigQuery tables should have appropriate label values"
   description = "Check if BigQuery tables have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_bigquery_table")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_bigquery_table")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -177,7 +192,7 @@ control "bigquery_table_expected_label_values" {
 control "compute_disk_expected_label_values" {
   title       = "Compute disks should have appropriate label values"
   description = "Check if Compute disks have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_compute_disk")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_compute_disk")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -186,7 +201,7 @@ control "compute_disk_expected_label_values" {
 control "compute_forwarding_rule_expected_label_values" {
   title       = "Compute forwarding rules should have appropriate label values"
   description = "Check if Compute forwarding rules have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_compute_forwarding_rule")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -195,7 +210,7 @@ control "compute_forwarding_rule_expected_label_values" {
 control "compute_image_expected_label_values" {
   title       = "Compute images should have appropriate label values"
   description = "Check if Compute images have appropriate label values."
-  sql         = <<-EOT
+  sql         = <<-EOQ
     with raw_data as
     (
       select
@@ -312,7 +327,7 @@ control "compute_image_expected_label_values" {
       $1::text = '{}'
       and labels is not null
       and source_project = project
-  EOT
+  EOQ
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -321,7 +336,7 @@ control "compute_image_expected_label_values" {
 control "compute_instance_expected_label_values" {
   title       = "Compute instances should have appropriate label values"
   description = "Check if Compute instances have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_compute_instance")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_compute_instance")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -330,7 +345,7 @@ control "compute_instance_expected_label_values" {
 control "compute_snapshot_expected_label_values" {
   title       = "Compute snapshots should have appropriate label values"
   description = "Check if Compute snapshots have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_compute_snapshot")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_compute_snapshot")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -339,7 +354,7 @@ control "compute_snapshot_expected_label_values" {
 control "dns_managed_zone_expected_label_values" {
   title       = "DNS managed zones should have appropriate label values"
   description = "Check if DNS managed zones have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_dns_managed_zone")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_dns_managed_zone")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -348,7 +363,7 @@ control "dns_managed_zone_expected_label_values" {
 control "sql_database_instance_expected_label_values" {
   title       = "SQL database instances should have appropriate label values"
   description = "Check if SQL database instances have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_sql_database_instance")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_sql_database_instance")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -357,7 +372,7 @@ control "sql_database_instance_expected_label_values" {
 control "storage_bucket_expected_label_values" {
   title       = "Storage buckets should have appropriate label values"
   description = "Check if Storage buckets have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_storage_bucket")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_storage_bucket")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -366,7 +381,7 @@ control "storage_bucket_expected_label_values" {
 control "bigtable_instance_expected_label_values" {
   title       = "Bigtable instances should have appropriate label values"
   description = "Check if Bigtable instances have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_bigtable_instance")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_bigtable_instance")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -375,7 +390,7 @@ control "bigtable_instance_expected_label_values" {
 control "dataproc_cluster_expected_label_values" {
   title       = "Dataproc clusters should have appropriate label values"
   description = "Check if Dataproc clusters have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_dataproc_cluster")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_dataproc_cluster")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -384,7 +399,7 @@ control "dataproc_cluster_expected_label_values" {
 control "pubsub_subscription_expected_label_values" {
   title       = "Pub/Sub subscriptions should have appropriate label values"
   description = "Check if Pub/Sub subscriptions have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_pubsub_subscription")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_pubsub_subscription")
   param "expected_label_values" {
     default = var.expected_label_values
   }
@@ -393,7 +408,7 @@ control "pubsub_subscription_expected_label_values" {
 control "pubsub_topic_expected_label_values" {
   title       = "Pub/Sub topics should have appropriate label values"
   description = "Check if Pub/Sub topics have appropriate label values."
-  sql         = replace(local.expected_label_values_sql_location, "__TABLE_NAME__", "gcp_pubsub_topic")
+  sql         = replace(local.expected_label_values_sql, "__TABLE_NAME__", "gcp_pubsub_topic")
   param "expected_label_values" {
     default = var.expected_label_values
   }

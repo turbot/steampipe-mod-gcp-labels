@@ -122,7 +122,7 @@ locals {
 }
 
 benchmark "expected_label_values" {
-  title       = "Expected Label Values"
+  title       = "GCP Expected Label Values"
   description = "Resources should have specific values for some labels."
   children = [
     control.bigquery_dataset_expected_label_values,

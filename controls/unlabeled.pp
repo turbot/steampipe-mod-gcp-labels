@@ -22,7 +22,7 @@ locals {
 }
 
 benchmark "unlabeled" {
-  title       = "Unlabeled"
+  title       = "GCP Unlabeled Resources"
   description = "Unlabeled resources are difficult to monitor and should be identified and remediated."
   children = [
     control.bigquery_dataset_unlabeled,

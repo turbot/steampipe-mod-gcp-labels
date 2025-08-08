@@ -43,7 +43,7 @@ locals {
 }
 
 benchmark "prohibited" {
-  title       = "Prohibited"
+  title       = "GCP Prohibited Labels"
   description = "Prohibited labels may contain sensitive, confidential, or otherwise unwanted data and should be removed."
   children = [
     control.bigquery_dataset_prohibited,

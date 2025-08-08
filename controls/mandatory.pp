@@ -38,7 +38,7 @@ locals {
 }
 
 benchmark "mandatory" {
-  title       = "Mandatory"
+  title       = "GCP Mandatory Labels"
   description = "Resources should all have a standard set of labels applied for functions like resource organization, automation, cost control, and access control."
   children = [
     control.bigquery_dataset_mandatory,

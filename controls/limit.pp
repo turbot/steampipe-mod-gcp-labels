@@ -34,7 +34,7 @@ locals {
 }
 
 benchmark "limit" {
-  title       = "Limit"
+  title       = "GCP Label Limit"
   description = "The number of labels on each resource should be monitored to avoid hitting the limit unexpectedly."
   children = [
     control.bigquery_dataset_label_limit,
